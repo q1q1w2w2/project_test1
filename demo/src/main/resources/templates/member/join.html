@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Join</title>
+    <style>
+        .field-error {
+            color: red;
+            border-color: red;
+        }
+    </style>
+</head>
+<body>
+<form th:action method="post" th:object="${member}">
+    <div>
+        <h2>회원가입</h2>
+    </div>
+
+    <div>
+        <label for="name">이름</label>
+        <input type="text" id="name" th:field="*{name}" th:errorclass="field-error" placeholder="이름을 입력하세요">
+        <div th:errors="*{name}" class="field-error">
+            이름 오류 메시지
+        </div>
+    </div>
+
+    <div>
+        <label for="loginId">ID</label>
+        <input type="text" id="loginId" th:field="*{loginId}" th:errorclass="field-error" placeholder="아이디를 입력하세요">
+        <div th:errors="*{loginId}" class="field-error">
+            ID 오류 메시지
+        </div>
+    </div>
+
+    <div>
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" th:field="*{password}" th:errorclass="field-error" placeholder="비밀번호를 입력하세요">
+        <div th:errors="*{password}" class="field-error">
+            비밀번호 오류 메시지
+        </div>
+    </div>
+
+    <div>
+        <button type="submit">회원가입</button>
+        <button type="button" onclick="location.href='/'">취소</button>
+    </div>
+</form>
+</body>
+</html>

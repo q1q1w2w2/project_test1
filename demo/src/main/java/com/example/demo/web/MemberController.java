@@ -40,6 +40,11 @@ public class MemberController {
         if (bindingResult.hasErrors()) {
             return "member/join";
         }
+        if (memberService.isLoginIdDuplicated(form.getLoginId())) {
+            log.info("** 로그인 ID 중복 **");
+            bindingResult.reject("loginIdDuplicated", "이미 존재하는 ID 입니다.");
+            return "member/join";
+        }
 
         memberService.join(new Member(form.getName(), form.getLoginId(), form.getPassword()));
 

@@ -3,25 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <style>
+        .field-error {
+            color: red;
+            border-color: red;
+        }
+    </style>
 </head>
 <body>
+
+<div>
+    <h2>로그인</h2>
+</div>
+
 <form th:action method="post" th:object="${member}">
-    <div>
-        <h2>로그인</h2>
+
+    <div th:if="${#fields.hasGlobalErrors()}">
+        <p class="field-error" th:each="error : ${#fields.globalErrors()}" th:text="${error}">
+            오류 메시지
+        </p>
     </div>
 
     <div>
         <label for="loginId">ID</label>
-        <input type="text" id="loginId" th:field="*{loginId}" placeholder="아이디를 입력하세요">
+        <input type="text" id="loginId" th:field="*{loginId}" th:errorclass="field-error" placeholder="아이디를 입력하세요">
+        <div th:errors="*{loginId}" class="field-error">
+            아이디 오류 메시지
+        </div>
     </div>
 
     <div>
         <label for="password">비밀번호</label>
-        <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요">
+        <input type="password" id="password" th:field="*{password}" th:errorclass="field-error"
+               placeholder="비밀번호를 입력하세요">
+        <div th:errors="*{password}" class="field-error">
+            비밀번호 오류 메시지
+        </div>
     </div>
 
-    <button type="submit">로그인</button>
-    <button href="/">취소</button>
+    <div>
+        <button type="submit">로그인</button>
+        <button type="button" onclick="location.href='/'">취소</button>
+    </div>
 </form>
 </body>
 </html>

@@ -16,6 +16,12 @@
 </div>
 <form th:action method="post" th:object="${member}">
 
+    <div th:if="${#fields.hasGlobalErrors()}">
+        <p th:each="error : ${#fields.globalErrors()}" class="field-error" th:text="${error}">
+            ID 중복 오류 메시지
+        </p>
+    </div>
+
     <div>
         <label for="name">이름</label>
         <input type="text" id="name" th:field="*{name}" th:errorclass="field-error" placeholder="이름을 입력하세요">

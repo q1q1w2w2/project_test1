@@ -14,9 +14,7 @@ public class TestDataInit {
 
     @PostConstruct
     public void init() {
-        Member memberA = new Member("MemberA", "test1", "test1");
-        Member memberB = new Member("MemberB", "test2", "test2");
-        memberService.join(memberA);
-        memberService.join(memberB);
+        memberService.join(new Member("MemberA", "test1", "test1"));
+        memberService.join(new Member("MemberB", "test2", "test2"));
     }
 }

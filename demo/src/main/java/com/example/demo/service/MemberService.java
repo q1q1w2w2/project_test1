@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +25,14 @@ public class MemberService {
         return memberRepository.findById(id);
     }
 
-    public Member findByLoginId(String loginId) {
-        return memberRepository.findByLoginId(loginId);
-    }
-
     public List<Member> findAll() {
         return memberRepository.findAll();
+    }
+
+    public Member login(String loginId, String password) {
+        return memberRepository.findByLoginId(loginId)
+                .filter(member -> member.getPassword().equals(password))
+                .orElse(null);
     }
 
 

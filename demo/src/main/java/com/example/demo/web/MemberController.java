@@ -5,6 +5,8 @@ import com.example.demo.dto.MemberJoinDto;
 import com.example.demo.dto.MemberLoginDto;
 import com.example.demo.dto.validation.ValidationSequence;
 import com.example.demo.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -50,7 +52,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String loginMember(@ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult) {
+    public String loginMember(@Validated @ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult, HttpServletRequest request) {
         log.info("*** login post ***");
         log.info("form = {}", form);
         log.info("bindingResult = {}", bindingResult);
@@ -59,9 +61,28 @@ public class MemberController {
             return "member/login";
         }
 
-        memberService.findByLoginId(form.getLoginId());
+        Member loginMember = memberService.login(form.getLoginId(), form.getPassword());
+        log.info("loginMember = {}", loginMember);
+        if (loginMember == null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 틀렸습니다.");
+            return "member/login";
+        }
+
+        HttpSession session = request.getSession();
+        session.setAttribute("member", loginMember);
 
         return "redirect:/";
     }
 
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        log.info("*** logout post ***");
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        return "redirect:/";
+    }
 }

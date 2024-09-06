@@ -18,7 +18,7 @@
 
     <div th:if="${#fields.hasGlobalErrors()}">
         <p th:each="error : ${#fields.globalErrors()}" class="field-error" th:text="${error}">
-            오류 메시지
+            ID 중복 오류 메시지
         </p>
     </div>
 

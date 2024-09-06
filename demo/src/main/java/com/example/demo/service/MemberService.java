@@ -4,6 +4,7 @@ import com.example.demo.domain.Member;
 import com.example.demo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long join(Member member) {
@@ -33,13 +35,13 @@ public class MemberService {
 
     public Member login(String loginId, String password) {
         return memberRepository.findByLoginId(loginId)
-                .filter(member -> member.getPassword().equals(password))
+                .filter(member -> passwordEncoder.matches(password, member.getPassword()))
                 .orElse(null);
     }
 
     public boolean isLoginIdDuplicated(String loginId) {
-        // 중복될 경우 true
         try {
+            // 중복될 경우 true
             return memberRepository.findByLoginId(loginId).isPresent();
         } catch (Exception e) {
             log.error("isLoginIdDuplication Exception");

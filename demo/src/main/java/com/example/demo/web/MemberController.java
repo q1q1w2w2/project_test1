@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MemberController {
 
     private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/join")
     public String join(@ModelAttribute("member") MemberJoinDto member) {
@@ -41,12 +43,12 @@ public class MemberController {
             return "member/join";
         }
         if (memberService.isLoginIdDuplicated(form.getLoginId())) {
-            log.info("** 로그인 ID 중복 **");
             bindingResult.reject("loginIdDuplicated", "이미 존재하는 ID 입니다.");
             return "member/join";
         }
 
-        memberService.join(new Member(form.getName(), form.getLoginId(), form.getPassword()));
+        String password = passwordEncoder.encode(form.getPassword());
+        memberService.join(new Member(form.getName(), form.getLoginId(), password));
 
         return "redirect:/";
     }
@@ -68,6 +70,7 @@ public class MemberController {
 
         Member loginMember = memberService.login(form.getLoginId(), form.getPassword());
         log.info("loginMember = {}", loginMember);
+
         if (loginMember == null) {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 틀렸습니다.");
             return "member/login";

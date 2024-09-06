@@ -18,10 +18,13 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(unique = true, nullable = false)
     private String loginId;
 
+    @Column(nullable = false)
     private String password;
 
     public Member(String name, String loginId, String password) {

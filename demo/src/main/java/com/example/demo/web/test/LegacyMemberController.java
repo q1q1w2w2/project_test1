@@ -3,6 +3,7 @@ package com.example.demo.web.test;
 import com.example.demo.domain.Member;
 import com.example.demo.dto.MemberJoinDto;
 import com.example.demo.dto.MemberLoginDto;
+import com.example.demo.service.LoginService;
 import com.example.demo.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class LegacyMemberController {
 
     private final MemberService memberService;
+    private final LoginService loginService;
 
     @GetMapping("/join")
     public String join(@ModelAttribute("member") MemberJoinDto member) {
@@ -36,7 +38,7 @@ public class LegacyMemberController {
         if (bindingResult.hasErrors()) {
             return "member/join";
         }
-        if (memberService.isLoginIdDuplicated(form.getLoginId())) {
+        if (loginService.isLoginIdDuplicated(form.getLoginId())) {
             bindingResult.reject("loginIdDuplicated", "이미 존재하는 ID 입니다.");
             return "member/join";
         }
@@ -61,7 +63,7 @@ public class LegacyMemberController {
             return "member/login";
         }
 
-        Member loginMember = memberService.login(form.getLoginId(), form.getPassword());
+        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
         log.info("loginMember = {}", loginMember);
 
         if (loginMember == null) {
@@ -87,10 +89,10 @@ public class LegacyMemberController {
         return "redirect:/";
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<TestRequest> test() {
-        TestRequest body = new TestRequest(HttpStatus.OK, "message", "testData");
-        return ResponseEntity.status(HttpStatus.OK).body(body);
-    }
+//    @GetMapping("/test")
+//    public ResponseEntity<TestRequest> test() {
+//        TestRequest body = new TestRequest(HttpStatus.OK, "message", "testData");
+//        return ResponseEntity.status(HttpStatus.OK).body(body);
+//    }
 
 }

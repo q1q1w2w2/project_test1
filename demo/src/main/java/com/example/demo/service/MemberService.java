@@ -35,21 +35,5 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    public Member login(String loginId, String password) {
-        return memberRepository.findByLoginId(loginId)
-                .filter(member -> passwordEncoder.matches(password, member.getPassword()))
-                .orElse(null);
-    }
-
-    public boolean isLoginIdDuplicated(String loginId) {
-        try {
-            // 중복될 경우 true
-            return memberRepository.findByLoginId(loginId).isPresent();
-        } catch (Exception e) {
-            log.error("isLoginIdDuplication Exception");
-            throw new RuntimeException("중복 체크 오류 발생", e);
-        }
-    }
-
 
 }

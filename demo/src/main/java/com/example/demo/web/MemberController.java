@@ -3,6 +3,7 @@ package com.example.demo.web;
 import com.example.demo.domain.Member;
 import com.example.demo.dto.MemberJoinDto;
 import com.example.demo.dto.MemberLoginDto;
+import com.example.demo.service.LoginService;
 import com.example.demo.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final LoginService loginService;
 
     @GetMapping("/join")
     public String join(@ModelAttribute("member") MemberJoinDto member) {
@@ -37,7 +39,7 @@ public class MemberController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("조건에 맞지 않습니다.");
         }
-        if (memberService.isLoginIdDuplicated(dto.getLoginId())) {
+        if (loginService.isLoginIdDuplicated(dto.getLoginId())) {
             // 409 conflict 대상 리소스의 현재 상태와 충돌하여 처리할 수 없음
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 ID 입니다.");
         }
@@ -61,7 +63,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비어있을 수 없습니다.");
         }
 
-        Member loginMember = memberService.login(form.getLoginId(), form.getPassword());
+        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
         log.info("loginMember = {}", loginMember);
 
         if (loginMember == null) {

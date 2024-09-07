@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.domain.Member;
 import com.example.demo.dto.MemberJoinDto;
+import com.example.demo.service.LoginService;
 import com.example.demo.service.MemberService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

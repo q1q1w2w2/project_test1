@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Member;
+import com.example.demo.dto.MemberJoinDto;
 import com.example.demo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +22,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Long join(Member member) {
-        return memberRepository.save(member);
+    public Member join(MemberJoinDto form) {
+        String password = passwordEncoder.encode(form.getPassword());
+        return memberRepository.save(new Member(form.getName(), form.getLoginId(), password));
     }
 
     public Member findById(Long id) {

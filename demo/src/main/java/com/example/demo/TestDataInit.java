@@ -1,11 +1,11 @@
 package com.example.demo;
 
 import com.example.demo.domain.Member;
+import com.example.demo.dto.MemberJoinDto;
 import com.example.demo.service.MemberService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,13 +14,10 @@ import org.springframework.stereotype.Component;
 public class TestDataInit {
 
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void init() {
-        String password1 = passwordEncoder.encode("test1");
-        String password2 = passwordEncoder.encode("test2");
-        memberService.join(new Member("MemberA", "test1", password1));
-        memberService.join(new Member("MemberB", "test2", password2));
+        memberService.join(new MemberJoinDto("MemberA", "test1", "test1"));
+        memberService.join(new MemberJoinDto("MemberB", "test2", "test2"));
     }
 }

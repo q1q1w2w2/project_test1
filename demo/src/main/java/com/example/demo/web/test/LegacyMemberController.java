@@ -1,4 +1,4 @@
-package com.example.demo.web;
+package com.example.demo.web.test;
 
 import com.example.demo.domain.Member;
 import com.example.demo.dto.MemberJoinDto;
@@ -10,16 +10,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+//@Controller
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/member")
-public class MemberController {
+public class LegacyMemberController {
 
     private final MemberService memberService;
 
@@ -29,21 +28,22 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<String> joinMember(@Validated @ModelAttribute("member") MemberJoinDto dto, BindingResult bindingResult) {
+    public String joinMember(@Validated @ModelAttribute("member") MemberJoinDto form, BindingResult bindingResult) {
         log.info("*** join post ***");
-        log.info("form = {}", dto);
+        log.info("form = {}", form);
         log.info("bindingResult = {}", bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("조건에 맞지 않습니다.");
+            return "member/join";
         }
-        if (memberService.isLoginIdDuplicated(dto.getLoginId())) {
-            // 409 conflict 대상 리소스의 현재 상태와 충돌하여 처리할 수 없음
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 ID 입니다.");
+        if (memberService.isLoginIdDuplicated(form.getLoginId())) {
+            bindingResult.reject("loginIdDuplicated", "이미 존재하는 ID 입니다.");
+            return "member/join";
         }
 
-        memberService.join(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료 되었습니다.");
+        memberService.join(form);
+
+        return "redirect:/";
     }
 
     @GetMapping("/login")
@@ -52,39 +52,45 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginMember(@Validated @ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult, HttpServletRequest request) {
+    public String loginMember(@Validated @ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult, HttpServletRequest request) {
         log.info("*** login post ***");
         log.info("form = {}", form);
         log.info("bindingResult = {}", bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비어있을 수 없습니다.");
+            return "member/login";
         }
 
         Member loginMember = memberService.login(form.getLoginId(), form.getPassword());
         log.info("loginMember = {}", loginMember);
 
         if (loginMember == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("아이디 또는 비밀번호가 틀렸습니다.");
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 틀렸습니다.");
+            return "member/login";
         }
 
-        // 세션 생성
         HttpSession session = request.getSession();
         session.setAttribute("member", loginMember);
 
-        return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
+        return "redirect:/";
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public String logout(HttpServletRequest request) {
         log.info("*** logout post ***");
 
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
-            return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body("로그인되어있지 않습니다");
+        return "redirect:/";
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<TestRequest> test() {
+        TestRequest body = new TestRequest(HttpStatus.OK, "message", "testData");
+        return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
+
 }

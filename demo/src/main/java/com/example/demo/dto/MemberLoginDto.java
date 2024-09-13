@@ -1,6 +1,8 @@
 package com.example.demo.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -8,10 +10,12 @@ import lombok.*;
 @ToString
 public class MemberLoginDto {
 
-    @NotEmpty
+    @NotNull
+    @Size(min = 3, max = 50)
     private String loginId;
 
-    @NotEmpty
+    @NotNull
+    @Size(min = 3, max = 100)
     private String password;
 
 }

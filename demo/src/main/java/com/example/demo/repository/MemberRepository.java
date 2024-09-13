@@ -34,4 +34,10 @@ public class MemberRepository {
                 .getResultList();
     }
 
+    // loginId 로 조회, 사용자와 권한 반환
+    public Optional<Member> findOneWithAuthoritiesByLoginId(String loginId) {
+        return em.createQuery("select m from Member m left join fetch m.authorities where m.loginId = :loginId", Member.class)
+                .setParameter("loginId", loginId)
+                .getResultList().stream().findFirst();
+    }
 }

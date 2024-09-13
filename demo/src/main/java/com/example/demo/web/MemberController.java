@@ -11,10 +11,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,15 +32,19 @@ public class MemberController {
     private final LoginService loginService;
 
     @GetMapping("/join")
-    public String join(@ModelAttribute("member") MemberJoinDto member) {
+    public String joinPage(@ModelAttribute("member") MemberJoinDto member) {
         return "member/join";
     }
 
     @PostMapping("/join")
+    public ResponseEntity<Member> join(@Validated MemberJoinDto memberDto) {
+        return ResponseEntity.ok(memberService.join(memberDto));
+    }
+
+
+//    @PostMapping("/join")
     public ResponseEntity<String> joinMember(@Validated @ModelAttribute("member") MemberJoinDto dto, BindingResult bindingResult) {
         log.info("*** join post ***");
-        log.info("form = {}", dto);
-        log.info("bindingResult = {}", bindingResult);
 
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("조건에 맞지 않습니다.");
@@ -48,36 +58,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료 되었습니다.");
     }
 
-    @GetMapping("/login")
-    public String login(@ModelAttribute("member") MemberLoginDto member) {
-        return "member/login";
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<String> loginMember(@Validated @ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult, HttpServletRequest request) {
-        log.info("*** login post ***");
-        log.info("form = {}", form);
-        log.info("bindingResult = {}", bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비어있을 수 없습니다.");
-        }
-
-        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
-        log.info("loginMember = {}", loginMember);
-
-        if (loginMember == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("아이디 또는 비밀번호가 틀렸습니다.");
-        }
-
-        // 세션 생성
-        HttpSession session = request.getSession();
-        session.setAttribute("member", loginMember);
-
-        return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
-    }
-
-    @PostMapping("/logout")
+//    @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         log.info("*** logout post ***");
 
@@ -89,4 +70,36 @@ public class MemberController {
 
         return ResponseEntity.status(HttpStatus.OK).body("로그인되어있지 않습니다");
     }
+
+////  @GetMapping("/login")
+//    public String login(@ModelAttribute("member") MemberLoginDto member) {
+//        return "member/login";
+//    }
+//
+////    @PostMapping("/login")
+//    public ResponseEntity<String> loginMember(@Validated @ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult, HttpServletRequest request) {
+//        log.info("*** login post ***");
+//        log.info("form = {}", form);
+//        log.info("bindingResult = {}", bindingResult);
+//
+//        if (bindingResult.hasErrors()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비어있을 수 없습니다.");
+//        }
+//
+//        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
+//        log.info("loginMember = {}", loginMember);
+//
+//        if (loginMember == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("아이디 또는 비밀번호가 틀렸습니다.");
+//        }
+//
+//        // 세션 생성
+//        HttpSession session = request.getSession();
+//        session.setAttribute("member", loginMember);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
+//    }
+
+
+
 }

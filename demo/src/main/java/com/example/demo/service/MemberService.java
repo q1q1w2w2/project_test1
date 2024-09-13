@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.domain.Authority;
 import com.example.demo.domain.Member;
 import com.example.demo.dto.MemberJoinDto;
 import com.example.demo.repository.MemberRepository;
@@ -23,8 +24,13 @@ public class MemberService {
 
     @Transactional
     public Member join(MemberJoinDto form) {
+        // 아이디 중복검증 필요
         String password = passwordEncoder.encode(form.getPassword());
-        return memberRepository.save(new Member(form.getName(), form.getLoginId(), password));
+        return memberRepository.save(Member.builder()
+                .name(form.getName())
+                .loginId(form.getLoginId())
+                .password(password)
+                .build());
     }
 
     public Member findById(Long id) {
@@ -33,6 +39,13 @@ public class MemberService {
 
     public List<Member> findAll() {
         return memberRepository.findAll();
+    }
+
+    @Transactional
+    public void addAuthority(Long id, Authority authority) {
+        Member member = memberRepository.findById(id);
+        member.getAuthorities().add(authority);
+        memberRepository.save(member);
     }
 
 

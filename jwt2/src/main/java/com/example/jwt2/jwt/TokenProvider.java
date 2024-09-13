@@ -48,7 +48,7 @@ public class TokenProvider implements InitializingBean {
     public String createToken(Authentication authentication) {
         // 권한 정보 생성
         // 사용자 권한 목록 가져옴 -> 스트림 변환 -> 각 권한 객체에서 권한 문자열 추출
-        // -> 권한 문자열을 쉼표 구분하여 하나의 문자열로(ROLE_USER,ROLE_ADMIN) 
+        // -> 권한 문자열을 쉼표 구분하여 하나의 문자열로(ROLE_USER,ROLE_ADMIN)
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));

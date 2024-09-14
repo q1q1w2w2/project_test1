@@ -61,7 +61,9 @@ public class TokenProvider implements InitializingBean {
                 .compact();
     }
 
+    // Jwt 검증, 그 결과로 사용자 인증 정보를 포함하는 Authentication 객체 반환
     public Authentication getAuthentication(String token) {
+
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

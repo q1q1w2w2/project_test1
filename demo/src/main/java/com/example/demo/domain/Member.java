@@ -7,8 +7,8 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
+//@Builder
+//@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
 public class Member {
 
@@ -32,4 +32,11 @@ public class Member {
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
 
+    @Builder
+    public Member(String name, String loginId, String password, Set<Authority> authorities) {
+        this.name = name;
+        this.loginId = loginId;
+        this.password = password;
+        this.authorities = authorities;
+    }
 }

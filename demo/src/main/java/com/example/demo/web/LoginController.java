@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -41,6 +42,8 @@ public class LoginController {
                 new UsernamePasswordAuthenticationToken(loginDto.getLoginId(), loginDto.getPassword());
         log.info("authenticationToken: {}", authenticationToken);
 
+        // 여기서 아이디/비밀번호 검증 -> AuthenticationException
+        // 이 전에 아이디만 따로 검증?
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("authentication: {}", authentication);
@@ -53,8 +56,6 @@ public class LoginController {
         log.info("httpHeaders: {}", httpHeaders);
 
         // 응답에 jwt 포함, 클라이언트 측에서 받아서 localStorage 에 보관
-        // return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
-
         LoginResponseDto loginResponseDto = new LoginResponseDto(jwt, "로그인되었습니다.");
 
         return ResponseEntity.status(HttpStatus.OK)

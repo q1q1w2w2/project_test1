@@ -37,39 +37,40 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<Member> join(@Validated MemberJoinDto memberDto) {
+    public ResponseEntity<Member> join(@Validated @RequestBody MemberJoinDto memberDto) {
+        log.info("memberDto = {}", memberDto.toString());
         return ResponseEntity.ok(memberService.join(memberDto));
     }
 
 
-//    @PostMapping("/join")
-    public ResponseEntity<String> joinMember(@Validated @ModelAttribute("member") MemberJoinDto dto, BindingResult bindingResult) {
-        log.info("*** join post ***");
-
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("조건에 맞지 않습니다.");
-        }
-        if (loginService.isLoginIdDuplicated(dto.getLoginId())) {
-            // 409 conflict 대상 리소스의 현재 상태와 충돌하여 처리할 수 없음
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 ID 입니다.");
-        }
-
-        memberService.join(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료 되었습니다.");
-    }
-
-//    @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        log.info("*** logout post ***");
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-            return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("로그인되어있지 않습니다");
-    }
+////    @PostMapping("/join")
+//    public ResponseEntity<String> joinMember(@Validated @ModelAttribute("member") MemberJoinDto dto, BindingResult bindingResult) {
+//        log.info("*** join post ***");
+//
+//        if (bindingResult.hasErrors()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("조건에 맞지 않습니다.");
+//        }
+//        if (loginService.isLoginIdDuplicated(dto.getLoginId())) {
+//            // 409 conflict 대상 리소스의 현재 상태와 충돌하여 처리할 수 없음
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 ID 입니다.");
+//        }
+//
+//        memberService.join(dto);
+//        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료 되었습니다.");
+//    }
+//
+////    @PostMapping("/logout")
+//    public ResponseEntity<String> logout(HttpServletRequest request) {
+//        log.info("*** logout post ***");
+//
+//        HttpSession session = request.getSession(false);
+//        if (session != null) {
+//            session.invalidate();
+//            return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.OK).body("로그인되어있지 않습니다");
+//    }
 
 ////  @GetMapping("/login")
 //    public String login(@ModelAttribute("member") MemberLoginDto member) {

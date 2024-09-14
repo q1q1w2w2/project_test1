@@ -20,27 +20,27 @@ public class LoginService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public Member login(String loginId, String password) {
-        Optional<Member> member = memberRepository.findByLoginId(loginId);
-        if (member.isPresent()) {
-            if (passwordEncoder.matches(password, member.get().getPassword())) {
-                return member.get();
-            } else {
-                throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
-            }
-        } else {
-            throw new IllegalArgumentException("아이디가 틀렸습니다.");
-        }
-    }
-
-    public boolean isLoginIdDuplicated(String loginId) {
-        try {
-            // 중복될 경우 true
-            return memberRepository.findByLoginId(loginId).isPresent();
-        } catch (Exception e) {
-            log.error("isLoginIdDuplication Exception");
-            throw new RuntimeException("중복 체크 오류 발생", e);
-        }
-    }
+//
+//    public Member login(String loginId, String password) {
+//        Optional<Member> member = memberRepository.findByLoginId(loginId);
+//        if (member.isPresent()) {
+//            if (passwordEncoder.matches(password, member.get().getPassword())) {
+//                return member.get();
+//            } else {
+//                throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+//            }
+//        } else {
+//            throw new IllegalArgumentException("아이디가 틀렸습니다.");
+//        }
+//    }
+//
+//    public boolean isLoginIdDuplicated(String loginId) {
+//        try {
+//            // 중복될 경우 true
+//            return memberRepository.findByLoginId(loginId).isPresent();
+//        } catch (Exception e) {
+//            log.error("isLoginIdDuplication Exception");
+//            throw new RuntimeException("중복 체크 오류 발생", e);
+//        }
+//    }
 }

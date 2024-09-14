@@ -24,70 +24,70 @@ public class LegacyMemberController {
     private final MemberService memberService;
     private final LoginService loginService;
 
-    @GetMapping("/join")
-    public String join(@ModelAttribute("member") MemberJoinDto member) {
-        return "member/join";
-    }
-
-    @PostMapping("/join")
-    public String joinMember(@Validated @ModelAttribute("member") MemberJoinDto form, BindingResult bindingResult) {
-        log.info("*** join post ***");
-        log.info("form = {}", form);
-        log.info("bindingResult = {}", bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            return "member/join";
-        }
-        if (loginService.isLoginIdDuplicated(form.getLoginId())) {
-            bindingResult.reject("loginIdDuplicated", "이미 존재하는 ID 입니다.");
-            return "member/join";
-        }
-
-        memberService.join(form);
-
-        return "redirect:/";
-    }
-
-    @GetMapping("/login")
-    public String login(@ModelAttribute("member") MemberLoginDto member) {
-        return "member/login";
-    }
-
-    @PostMapping("/login")
-    public String loginMember(@Validated @ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult, HttpServletRequest request) {
-        log.info("*** login post ***");
-        log.info("form = {}", form);
-        log.info("bindingResult = {}", bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            return "member/login";
-        }
-
-        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
-        log.info("loginMember = {}", loginMember);
-
-        if (loginMember == null) {
-            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 틀렸습니다.");
-            return "member/login";
-        }
-
-        HttpSession session = request.getSession();
-        session.setAttribute("member", loginMember);
-
-        return "redirect:/";
-    }
-
-    @PostMapping("/logout")
-    public String logout(HttpServletRequest request) {
-        log.info("*** logout post ***");
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-
-        return "redirect:/";
-    }
+//    @GetMapping("/join")
+//    public String join(@ModelAttribute("member") MemberJoinDto member) {
+//        return "member/join";
+//    }
+//
+//    @PostMapping("/join")
+//    public String joinMember(@Validated @ModelAttribute("member") MemberJoinDto form, BindingResult bindingResult) {
+//        log.info("*** join post ***");
+//        log.info("form = {}", form);
+//        log.info("bindingResult = {}", bindingResult);
+//
+//        if (bindingResult.hasErrors()) {
+//            return "member/join";
+//        }
+//        if (loginService.isLoginIdDuplicated(form.getLoginId())) {
+//            bindingResult.reject("loginIdDuplicated", "이미 존재하는 ID 입니다.");
+//            return "member/join";
+//        }
+//
+//        memberService.join(form);
+//
+//        return "redirect:/";
+//    }
+//
+//    @GetMapping("/login")
+//    public String login(@ModelAttribute("member") MemberLoginDto member) {
+//        return "member/login";
+//    }
+//
+//    @PostMapping("/login")
+//    public String loginMember(@Validated @ModelAttribute("member") MemberLoginDto form, BindingResult bindingResult, HttpServletRequest request) {
+//        log.info("*** login post ***");
+//        log.info("form = {}", form);
+//        log.info("bindingResult = {}", bindingResult);
+//
+//        if (bindingResult.hasErrors()) {
+//            return "member/login";
+//        }
+//
+//        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
+//        log.info("loginMember = {}", loginMember);
+//
+//        if (loginMember == null) {
+//            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 틀렸습니다.");
+//            return "member/login";
+//        }
+//
+//        HttpSession session = request.getSession();
+//        session.setAttribute("member", loginMember);
+//
+//        return "redirect:/";
+//    }
+//
+//    @PostMapping("/logout")
+//    public String logout(HttpServletRequest request) {
+//        log.info("*** logout post ***");
+//
+//        HttpSession session = request.getSession(false);
+//        if (session != null) {
+//            session.invalidate();
+//        }
+//
+//        return "redirect:/";
+//    }
 
 //    @GetMapping("/test")
 //    public ResponseEntity<TestRequest> test() {

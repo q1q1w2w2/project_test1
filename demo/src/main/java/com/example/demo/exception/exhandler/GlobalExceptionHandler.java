@@ -2,6 +2,7 @@ package com.example.demo.exception.exhandler;
 
 
 import com.example.demo.exception.UserExistException;
+import com.example.demo.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> IllegalArgumentExceptionHandler(IllegalArgumentException e) {
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("[IllegalArgumentException 발생]");
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -23,18 +24,26 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserExistException.class)
-    public ResponseEntity<String> UserExistExceptionHandler(UserExistException e) {
+    public ResponseEntity<String> handleUserExistException(UserExistException e) {
         log.error("[UserExistException 발생]");
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
+        log.error("[UserNotFoundException 발생]");
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<String> AuthenticationExceptionHandler(AuthenticationException e) {
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
         log.error("[AuthenticationException 발생]");
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body("아이디 또는 비밀번호가 틀렸습니다.");
+                .body("비밀번호가 틀렸습니다.");
     }
 }

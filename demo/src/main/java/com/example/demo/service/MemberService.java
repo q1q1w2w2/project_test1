@@ -85,5 +85,11 @@ public class MemberService {
         return SecurityUtil.getCurrentUsername().flatMap(memberRepository::findOneWithAuthoritiesByLoginId);
     }
 
-
+    public Optional<Member> validateLoginId(String loginId) {
+        if (memberRepository.findByLoginId(loginId).isPresent()) {
+            return memberRepository.findByLoginId(loginId);
+        } else {
+            return Optional.empty();
+        }
+    }
 }

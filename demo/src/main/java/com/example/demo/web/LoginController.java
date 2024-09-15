@@ -3,8 +3,10 @@ package com.example.demo.web;
 import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.dto.MemberLoginDto;
 import com.example.demo.dto.TokenDto;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.jwt.JwtFilter;
 import com.example.demo.jwt.TokenProvider;
+import com.example.demo.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +29,7 @@ public class LoginController {
 
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final MemberService memberService;
 
     @GetMapping("/login")
     public String loginPage(@ModelAttribute("member") MemberLoginDto member) {
@@ -44,6 +47,10 @@ public class LoginController {
 
         // 여기서 아이디/비밀번호 검증 -> AuthenticationException
         // 이 전에 아이디만 따로 검증?
+        if (memberService.validateLoginId(loginDto.getLoginId()).isEmpty()) {
+            throw new UserNotFoundException("아이디가 없습니다.");
+        }
+
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("authentication: {}", authentication);

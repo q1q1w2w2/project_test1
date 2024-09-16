@@ -46,7 +46,6 @@ public class LoginController {
         log.info("authenticationToken: {}", authenticationToken);
 
         // 여기서 아이디/비밀번호 검증 -> AuthenticationException
-        // 이 전에 아이디만 따로 검증?
         if (memberService.validateLoginId(loginDto.getLoginId()).isEmpty()) {
             throw new UserNotFoundException("아이디가 없습니다.");
         }

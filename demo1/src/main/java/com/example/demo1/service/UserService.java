@@ -2,7 +2,7 @@ package com.example.demo1.service;
 
 import com.example.demo1.domain.User;
 import com.example.demo1.dto.JoinDto;
-import com.example.demo1.exception.UserExistException;
+import com.example.demo1.exception.user.UserAlreadyExistException;
 import com.example.demo1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,16 +23,20 @@ public class UserService {
     public User join(JoinDto dto) {
 
         if (userRepository.findByLoginId(dto.getLoginId()).isPresent()) {
-            throw new UserExistException("이미 존재하는 아이디입니다.");
+            throw new UserAlreadyExistException("이미 존재하는 아이디입니다.");
         }
 
         User user = User.builder()
                 .username(dto.getUsername())
                 .loginId(dto.getLoginId())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .authorize("ROLE_USER")
+                .authority("ROLE_USER")
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public boolean validateLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId).isPresent();
     }
 }

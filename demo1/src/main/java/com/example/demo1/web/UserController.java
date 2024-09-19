@@ -36,9 +36,11 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> join(@Validated @RequestBody JoinDto dto) {
         log.info("*** join POST ***");
         User user = userService.join(dto);
+
         Map<String, Object> response = new HashMap<>();
-        response.put("user", user);
         response.put("message", "회원가입이 완료되었습니다.");
+        response.put("user", user);
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

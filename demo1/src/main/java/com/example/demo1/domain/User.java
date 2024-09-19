@@ -27,14 +27,14 @@ public class User {
     @Column(name = "password", length =100)
     private String password;
 
-    @Column(name = "authorize")
-    private String authorize;
+    @Column(name = "authority")
+    private String authority;
 
     @Builder
-    public User(String username, String loginId, String password, String authorize) {
+    public User(String username, String loginId, String password, String authority) {
         this.username = username;
         this.loginId = loginId;
         this.password = password;
-        this.authorize = authorize;
+        this.authority = authority;
     }
 }

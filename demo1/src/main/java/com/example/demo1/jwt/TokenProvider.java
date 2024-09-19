@@ -1,5 +1,6 @@
 package com.example.demo1.jwt;
 
+import com.example.demo1.util.AesUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -15,11 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,16 +26,19 @@ public class TokenProvider implements InitializingBean {
     private static final String AUTHORIZATION_KEY = "auth";
 
     private SecretKey key;
+    private SecretKey claimKey;
 
     private final String secret;
     private final long tokenValidityInMilliseconds;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInMilliseconds
-    ) {
+            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInMilliseconds,
+            @Value("${jwt.claim-key}") String claimKeyString
+    ) throws Exception {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInMilliseconds * 1000;
+        this.claimKey = AesUtil.generateKeyFromString(claimKeyString);
     }
 
     @Override
@@ -47,36 +47,46 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(decode);
     }
 
-    public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
+    public String createToken(Authentication authentication) throws Exception {
+
+        String subject = authentication.getName();
+        String authority = authentication.getAuthorities().stream()
+                .findFirst()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+                .orElse(""); // 권한이 없을 경우 빈 문자열
 
         long now = new Date().getTime();
         Date validity = new Date(now + tokenValidityInMilliseconds);
 
+        String encryptSubject = AesUtil.encrypt(subject, claimKey);
+        String encryptAuthority = AesUtil.encrypt(authority, claimKey);
+
         return Jwts.builder()
-                .subject(authentication.getName()) // 등록된 클레임 sub(토큰 제목)
-                .claim(AUTHORIZATION_KEY, authorities) // 비공개 클레임
-                .expiration(validity) // 등록된 클레임 exp(만료 시간)
-                .signWith(key, SignatureAlgorithm.HS512) // signature 부분을 생성하는 데 사용
+                .subject(encryptSubject)
+                .claim("authority", encryptAuthority)
+                .issuedAt(new Date())
+                .expiration(validity)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) throws Exception {
         Claims claims = Jwts.parser()
                 .verifyWith(key) // secretKey
                 .build()
-                .parseSignedClaims(token) // Type-safe JWTs(안되면 parseClaimsJws로 변경해보기)
+                .parseSignedClaims(token)
                 .getPayload();
 
-        // ROLE_ADMIN,ROLE_USER -> [ROLE_ADMIN, ROLE_USER]
-        List<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORIZATION_KEY).toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        String subject = AesUtil.decrypt(claims.getSubject(), claimKey);
+        String encryptAuthority = Optional.ofNullable(claims.get("authority"))
+                .map(Object::toString)
+                .orElse("");
+        String authority = AesUtil.decrypt(encryptAuthority, claimKey);
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(authority));
 
+        User principal = new User(subject, "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 

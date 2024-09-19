@@ -30,8 +30,13 @@ public class UserRepository {
     }
 
     public Optional<User> findByLoginId(String loginId) {
-        return findAll().stream()
-                .filter(user -> user.getLoginId().equals(loginId))
-                .findFirst();
+        // findAll -> 불필요
+//        return findAll().stream()
+//                .filter(user -> user.getLoginId().equals(loginId))
+//                .findFirst();
+
+        return em.createQuery("select u from User u where loginId=:loginId", User.class)
+                .setParameter("loginId", loginId)
+                .getResultList().stream().findFirst();
     }
 }

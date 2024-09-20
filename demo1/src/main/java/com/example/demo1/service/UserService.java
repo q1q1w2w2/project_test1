@@ -36,7 +36,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public boolean validateLoginId(String loginId) {
-        return userRepository.findByLoginId(loginId).isPresent();
+    @Transactional
+    public User joinAdmin(JoinDto dto) {
+
+        if (userRepository.findByLoginId(dto.getLoginId()).isPresent()) {
+            throw new UserAlreadyExistException("이미 존재하는 아이디입니다.");
+        }
+
+        User user = User.builder()
+                .username(dto.getUsername())
+                .loginId(dto.getLoginId())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .authority("ROLE_ADMIN")
+                .build();
+
+        return userRepository.save(user);
     }
+
+
 }

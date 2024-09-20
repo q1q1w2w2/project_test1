@@ -14,6 +14,7 @@ public class TestDataInit {
 
     @PostConstruct
     public void init() {
+        userService.joinAdmin(new JoinDto("admin", "admin", "admin"));
         userService.join(new JoinDto("memberA", "test1", "test1"));
         userService.join(new JoinDto("memberB", "test2", "test2"));
     }

@@ -21,6 +21,7 @@ logging:
 server:
   error:
     include-stacktrace: never
+#  port: 1660
 
 jwt:
   header: Authorization

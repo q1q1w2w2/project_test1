@@ -1,0 +1,37 @@
+spring:
+#  datasource:
+#    url: jdbc:h2:tcp://localhost/~/test1
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
+  datasource:
+    url: jdbc:mysql://hwantest.cvhih4shqh6y.ap-northeast-2.rds.amazonaws.com:3306/hwantest?useSSL=false&serverTimezone=Asia/Seoul
+    username: ljb915
+    password: password9999
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+#      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+logging:
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace
+#    root: trace
+
+server:
+  error:
+    include-stacktrace: never
+#  port: 8080
+
+jwt:
+  header: Authorization
+  secret: c3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Q
+  token-validity-in-seconds: 86400
+  claim-key: This_is_Claim_Key

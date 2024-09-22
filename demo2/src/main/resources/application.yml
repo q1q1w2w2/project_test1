@@ -1,23 +1,23 @@
 spring:
-#  datasource:
-#    url: jdbc:h2:tcp://localhost/~/test1
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
   datasource:
-    url: jdbc:mysql://hwantest.cvhih4shqh6y.ap-northeast-2.rds.amazonaws.com:3306/hwantest?useSSL=false&serverTimezone=Asia/Seoul
-    username: ljb915
-    password: password9999
+    url: jdbc:h2:tcp://localhost/~/test1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+#  datasource:
+#    url: jdbc:mysql://hwantest.cvhih4shqh6y.ap-northeast-2.rds.amazonaws.com:3306/hwantest?useSSL=false&serverTimezone=Asia/Seoul
+#    username: ljb915
+#    password: password9999
 
   jpa:
     hibernate:
-      ddl-auto: update
-#      ddl-auto: create
+#      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
         show_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
+#        dialect: org.hibernate.dialect.MySQLDialect
 
 logging:
   level:

@@ -55,9 +55,15 @@ public class UserService {
 
         User user = User.builder()
                 .username(dto.getUsername())
+                .birth(dto.getBirth())
+                .tel(dto.getTel())
+                .address(dto.getAddress())
+                .detail(dto.getDetail())
                 .loginId(dto.getLoginId())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .authority("ROLE_ADMIN")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return userRepository.save(user);

@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequest ->
                         authorizeRequest
                                 .requestMatchers("/h2-console/**", "/api/**", "/test/**", "/error").permitAll()
+                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .anyRequest().authenticated()
                 )
 

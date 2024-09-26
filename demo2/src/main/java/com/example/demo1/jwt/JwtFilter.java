@@ -1,6 +1,5 @@
 package com.example.demo1.jwt;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -13,7 +12,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 public class JwtFilter extends GenericFilterBean {
@@ -36,6 +34,7 @@ public class JwtFilter extends GenericFilterBean {
         log.info("jwt: {}", jwt);
 
         // 토큰 유효성 확인
+        // 여기서 refresh token 유효성 확인 후 새로운 액세스 토큰 발행
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = null;
             try {

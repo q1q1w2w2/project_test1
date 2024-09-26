@@ -92,7 +92,7 @@ public class TokenProvider implements InitializingBean {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token); // 일단 수정했는데 될지 모름
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (SignatureException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");

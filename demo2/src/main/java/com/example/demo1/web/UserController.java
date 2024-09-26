@@ -49,11 +49,10 @@ public class UserController {
     @PostMapping("/update/{id}")
     public ResponseEntity<Map<String, Object>> update(@Validated @RequestBody UpdateDto dto, @PathVariable Long id) {
         userService.update(id, dto);
-        User findUser = userService.findById(id);
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "회원 업데이트 완료");
-        response.put("user", findUser);
+        response.put("user", userService.findById(id));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

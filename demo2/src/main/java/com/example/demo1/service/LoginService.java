@@ -10,6 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -18,7 +21,7 @@ public class LoginService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public String login(LoginDto dto) throws Exception {
+    public Map<String, String> login(LoginDto dto) throws Exception {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(dto.getLoginId(), dto.getPassword());
 
@@ -26,7 +29,10 @@ public class LoginService {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return tokenProvider.createToken(authentication);
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("refreshToken", tokenProvider.createRefreshToken(authentication));
+        tokens.put("accessToken", tokenProvider.createAccessToken(authentication));
+        return tokens;
     }
 
     /**

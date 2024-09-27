@@ -1,5 +1,6 @@
 package com.example.demo1.jwt;
 
+import com.example.demo1.service.CustomUserDetailsService;
 import com.example.demo1.util.AesUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -13,11 +14,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -29,16 +30,22 @@ public class TokenProvider implements InitializingBean {
     private SecretKey claimKey;
 
     private final String secret;
-    private final long tokenValidityInMilliseconds;
+    private final long accessTokenExpireTime;
+    private final long refreshTokenExpireTime;
+    private final CustomUserDetailsService customUserDetailsService;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInMilliseconds,
-            @Value("${jwt.claim-key}") String claimKeyString
+            @Value("${jwt.access-token-expire-time}") long accessTokenExpireTime,
+            @Value("${jwt.refresh-token-expire-time}") long refreshTokenExpireTime,
+            @Value("${jwt.claim-key}") String claimKeyString,
+            CustomUserDetailsService customUserDetailsService
     ) throws Exception {
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInMilliseconds * 1000;
+        this.accessTokenExpireTime = accessTokenExpireTime * 1000;
+        this.refreshTokenExpireTime = refreshTokenExpireTime * 1000;
         this.claimKey = AesUtil.generateKeyFromString(claimKeyString);
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -47,23 +54,40 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(decode);
     }
 
-    public String createToken(Authentication authentication) throws Exception {
-
+    public String createAccessToken(Authentication authentication) throws Exception {
         String subject = authentication.getName();
+
         String authority = authentication.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
-                .orElse(""); // 권한이 없을 경우 빈 문자열
-
-        long now = new Date().getTime();
-        Date validity = new Date(now + tokenValidityInMilliseconds);
-
+                .orElse("ROLE_USER");
         String encryptSubject = AesUtil.encrypt(subject, claimKey);
         String encryptAuthority = AesUtil.encrypt(authority, claimKey);
 
+        return createToken(encryptSubject, encryptAuthority, accessTokenExpireTime);
+    }
+
+    public String createRefreshToken(Authentication authentication) throws Exception {
+        String subject = authentication.getName();
+
+        String encryptSubject = AesUtil.encrypt(subject, claimKey);
+        String encryptAuthority = AesUtil.encrypt("ROLE_USER", claimKey);
+
+        return createToken(encryptSubject, encryptAuthority, refreshTokenExpireTime);
+    }
+
+    public String createNewAccessToken(String refreshToken) throws Exception {
+        Authentication authentication = getAuthenticationFromRefreshToken(refreshToken);
+        return createAccessToken(authentication);
+    }
+
+    private String createToken(String subject, String authority, long expireTime) {
+        long now = new Date().getTime();
+        Date validity = new Date(now + expireTime);
+
         return Jwts.builder()
-                .subject(encryptSubject)
-                .claim("authority", encryptAuthority)
+                .subject(subject)
+                .claim("authority", authority)
                 .issuedAt(new Date())
                 .expiration(validity)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -80,14 +104,42 @@ public class TokenProvider implements InitializingBean {
         String subject = AesUtil.decrypt(claims.getSubject(), claimKey);
         String encryptAuthority = Optional.ofNullable(claims.get("authority"))
                 .map(Object::toString)
-                .orElse("");
+                .orElse("ROLE_USER");
         String authority = AesUtil.decrypt(encryptAuthority, claimKey);
 
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(authority));
+        return createAuthentication(subject, token, authority);
+    }
+
+    public Authentication getAuthenticationFromRefreshToken(String refreshToken) throws Exception {
+        String subject = extractUserIdFromRefreshToken(refreshToken);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(subject);
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+
+        String authority = authorities.stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("ROLE_USER");
+
+        return createAuthentication(subject, refreshToken, authority);
+    }
+
+    private Authentication createAuthentication(String subject, String token, String authority) {
+//        Collection<GrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(authority));
+        Collection<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(authority));
 
         User principal = new User(subject, "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public String extractUserIdFromRefreshToken(String refreshToken) throws Exception {
+        Claims claims = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseClaimsJws(refreshToken)
+                .getPayload();
+        String encryptSubject = claims.getSubject();
+        return AesUtil.decrypt(encryptSubject, claimKey);
     }
 
     public boolean validateToken(String token) {
@@ -105,4 +157,6 @@ public class TokenProvider implements InitializingBean {
         }
         return false;
     }
+
+
 }

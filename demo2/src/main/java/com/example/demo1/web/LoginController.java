@@ -33,13 +33,16 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@Validated @RequestBody LoginDto dto) throws Exception {
-        String jwt = loginService.login(dto);
+        Map<String, String> token = loginService.login(dto);
+        String accessToken = token.get("accessToken");
+        String refreshToken = token.get("refreshToken");
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
 
         Map<String, String> response = new HashMap<>();
-        response.put("token", jwt);
+        response.put("accessToken", accessToken);
+        response.put("refreshToken", refreshToken);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(httpHeaders)

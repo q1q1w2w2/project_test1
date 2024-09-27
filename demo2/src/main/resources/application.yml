@@ -33,5 +33,7 @@ server:
 jwt:
   header: Authorization
   secret: c3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Qtc3ByaW5nLWJvb3Qtc2VjcnVpdHktand0LXRva2VuLXRlc3Q
-  token-validity-in-seconds: 86400
+  refresh-token-expire-time: 86400 # 24시간
+  access-token-expire-time: 1800 # 30분
   claim-key: This_is_Claim_Key
+  default-role: ROLE_USER

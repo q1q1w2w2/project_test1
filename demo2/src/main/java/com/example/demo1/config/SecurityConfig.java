@@ -90,15 +90,6 @@ public class SecurityConfig {
                         exceptionHandling
                                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                                 .accessDeniedHandler(customAccessDeniedHandler)
-                )
-
-                .logout(logout ->
-                        logout.logoutUrl("/logout")
-                                .logoutSuccessUrl("/")
-                                .logoutSuccessHandler(new SimpleUrlLogoutSuccessHandler())
-                                .addLogoutHandler((request, response, authentication) -> {
-                                    String token = request.getHeader("Authorization");
-                                })
                 );
 
         return http.build();
@@ -119,9 +110,9 @@ public class SecurityConfig {
     }
 
     // 이 부분에 대해서는 spring security의 필터 체인 자체를 생략(jwtFilter 생략)
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web ->
-//                web.ignoring().requestMatchers("/authority/all"));
-//    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web ->
+                web.ignoring().requestMatchers("/token/refresh"));
+    }
 }

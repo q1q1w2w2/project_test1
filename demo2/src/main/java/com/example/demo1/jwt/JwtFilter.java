@@ -29,6 +29,7 @@ public class JwtFilter extends GenericFilterBean {
         // jwt 인증 정보를 Security Context 에 저장하는 필터
         log.info("JWT 인증 정보 Security Context에 저장");
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
         log.info("jwt: {}", jwt);
@@ -57,7 +58,6 @@ public class JwtFilter extends GenericFilterBean {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
-
         }
         return null;
     }

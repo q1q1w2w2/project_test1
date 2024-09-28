@@ -1,8 +1,10 @@
 package com.example.demo1.web;
 
+import com.example.demo1.domain.BlackList;
 import com.example.demo1.domain.User;
 import com.example.demo1.jwt.JwtFilter;
 import com.example.demo1.jwt.TokenProvider;
+import com.example.demo1.service.BlackListService;
 import com.example.demo1.service.UserService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,13 +27,13 @@ public class AuthController {
 
     private final UserService userService;
     private final TokenProvider tokenProvider;
+    private final BlackListService blackListService;
 
-    @PostMapping("/token/refresh")
+    @PostMapping("/token-refresh")
     public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request) throws Exception {
         // 클라이언트 측에서 access token의 만료를 확인하고 재발급을 위해 요청
-        String bearer = request.getHeader(JwtFilter.AUTHORIZATION_HEADER);
-        String refreshToken = bearer.substring(7);
 
+        String refreshToken = request.getHeader("Refresh");
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "refresh token이 null입니다."));
@@ -39,8 +41,16 @@ public class AuthController {
 
         try {
             if (tokenProvider.validateToken(refreshToken)) {
+                // 여기서 refresh token도 새롭게 발급 + 이전 refresh token 무효화
                 String accessToken = tokenProvider.createNewAccessToken(refreshToken);
-                return ResponseEntity.ok(Map.of("accessToken", accessToken));
+                String newRefreshToken = tokenProvider.createRefreshToken(tokenProvider.getAuthentication(accessToken));
+                // 블랙리스트 추가
+                blackListService.saveBlackList(new BlackList(refreshToken));
+
+                return ResponseEntity.ok(Map.of(
+                        "accessToken", accessToken,
+                        "refreshToken", newRefreshToken
+                ));
             } else {
                 // refresh token이 유효하지 않을 경우
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

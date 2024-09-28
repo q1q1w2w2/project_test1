@@ -70,7 +70,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeRequest ->
                         authorizeRequest
-                                .requestMatchers("/h2-console/**", "/api/**", "/test/**", "/error", "/authority/all").permitAll()
+                                .requestMatchers("/h2-console/**", "/api/**", "/test/**", "/error", "/authority/all", "/token-refresh").permitAll()
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -110,9 +110,9 @@ public class SecurityConfig {
     }
 
     // 이 부분에 대해서는 spring security의 필터 체인 자체를 생략(jwtFilter 생략)
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web ->
-                web.ignoring().requestMatchers("/token/refresh"));
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web ->
+//                web.ignoring().requestMatchers("/token-refresh"));
+//    }
 }

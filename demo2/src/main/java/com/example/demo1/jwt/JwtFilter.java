@@ -26,7 +26,6 @@ public class JwtFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // jwt 인증 정보를 Security Context 에 저장하는 필터
         log.info("JWT 인증 정보 Security Context에 저장");
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
@@ -34,8 +33,6 @@ public class JwtFilter extends GenericFilterBean {
         String requestURI = httpServletRequest.getRequestURI();
         log.info("jwt: {}", jwt);
 
-        // 토큰 유효성 확인
-        // 여기서 refresh token 유효성 확인 후 새로운 액세스 토큰 발행
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = null;
             try {
@@ -52,7 +49,6 @@ public class JwtFilter extends GenericFilterBean {
         chain.doFilter(request, response);
     }
 
-    // request Header 에서 토큰 정보 꺼냄
     public String resolveToken(HttpServletRequest request) {
         log.info("header에서 토큰 꺼냄");
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);

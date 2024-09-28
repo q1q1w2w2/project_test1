@@ -1,5 +1,7 @@
 package com.example.demo1.jwt;
 
+import com.example.demo1.exception.TokenValidationException;
+import com.example.demo1.repository.BlackListRepository;
 import com.example.demo1.service.CustomUserDetailsService;
 import com.example.demo1.util.AesUtil;
 import io.jsonwebtoken.*;
@@ -33,19 +35,22 @@ public class TokenProvider implements InitializingBean {
     private final long accessTokenExpireTime;
     private final long refreshTokenExpireTime;
     private final CustomUserDetailsService customUserDetailsService;
+    private final BlackListRepository blackListRepository;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access-token-expire-time}") long accessTokenExpireTime,
             @Value("${jwt.refresh-token-expire-time}") long refreshTokenExpireTime,
             @Value("${jwt.claim-key}") String claimKeyString,
-            CustomUserDetailsService customUserDetailsService
+            CustomUserDetailsService customUserDetailsService,
+            BlackListRepository blackListRepository
     ) throws Exception {
         this.secret = secret;
         this.accessTokenExpireTime = accessTokenExpireTime * 1000;
         this.refreshTokenExpireTime = refreshTokenExpireTime * 1000;
         this.claimKey = AesUtil.generateKeyFromString(claimKeyString);
         this.customUserDetailsService = customUserDetailsService;
+        this.blackListRepository = blackListRepository;
     }
 
     @Override
@@ -77,6 +82,10 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String createNewAccessToken(String refreshToken) throws Exception {
+        if (blackListRepository.existsInBlackList(refreshToken)) {
+            throw new TokenValidationException("유효하지 않은 refresh token입니다.");
+        }
+
         Authentication authentication = getAuthenticationFromRefreshToken(refreshToken);
         return createAccessToken(authentication);
     }
@@ -124,8 +133,6 @@ public class TokenProvider implements InitializingBean {
     }
 
     private Authentication createAuthentication(String subject, String token, String authority) {
-//        Collection<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(authority));
         Collection<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(authority));
 
         User principal = new User(subject, "", authorities);
@@ -144,7 +151,9 @@ public class TokenProvider implements InitializingBean {
 
     public boolean validateToken(String token) {
         try {
+            log.info("validateToken: {}", token);
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+            log.info("검증 성공");
             return true;
         } catch (SignatureException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");

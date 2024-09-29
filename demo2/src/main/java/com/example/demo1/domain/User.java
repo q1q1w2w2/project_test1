@@ -56,7 +56,6 @@ public class User {
     }
 
     @Builder
-
     public User(Long id, String username, String loginId, String password, String authority, LocalDate birth, String tel, String address, String detail, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;

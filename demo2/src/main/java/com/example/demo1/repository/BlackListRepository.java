@@ -5,6 +5,8 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class BlackListRepository {
@@ -15,10 +17,11 @@ public class BlackListRepository {
         em.persist(blackList);
     }
 
-    public boolean existsInBlackList(String refreshToken) {
-        return !em.createQuery("select b from BlackList b where b.invalidRefreshToken = :refreshToken")
+    public Optional<BlackList> findByInvalidRefreshToken(String refreshToken) {
+        return em.createQuery("select b from BlackList b where b.invalidRefreshToken = :refreshToken", BlackList.class)
                 .setParameter("refreshToken", refreshToken)
                 .getResultList()
-                .isEmpty(); // 비어있으면 false, 존재하면 true
+                .stream().findFirst();
     }
+
 }

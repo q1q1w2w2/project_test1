@@ -16,4 +16,8 @@ public class BlackListService {
     public void saveBlackList(BlackList blackList) {
         blackListRepository.save(blackList);
     }
+
+    public boolean existsInBlackList(String refreshToken) {
+        return !blackListRepository.findByInvalidRefreshToken(refreshToken).isEmpty(); // 비어있으면 false, 존재하면 true
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +40,8 @@ public class UserService {
                 .loginId(dto.getLoginId())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .authority("ROLE_USER")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now().withNano(0))
+                .updatedAt(LocalDateTime.now().withNano(0))
                 .build();
 
         return userRepository.save(user);
@@ -62,8 +63,8 @@ public class UserService {
                 .loginId(dto.getLoginId())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .authority("ROLE_ADMIN")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now().withNano(0))
+                .updatedAt(LocalDateTime.now().withNano(0))
                 .build();
 
         return userRepository.save(user);
@@ -82,7 +83,7 @@ public class UserService {
                 .tel(dto.getTel())
                 .address(dto.getAddress())
                 .detail(dto.getDetail())
-                .updatedAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now().withNano(0))
                 .build();
 
         findUser.updateUser(user);
@@ -90,5 +91,9 @@ public class UserService {
 
     public User findById(Long id) {
         return userRepository.findById(id);
+    }
+
+    public Optional<User> findByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId);
     }
 }

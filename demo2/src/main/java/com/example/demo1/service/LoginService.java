@@ -21,6 +21,7 @@ public class LoginService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public Map<String, String> login(LoginDto dto) throws Exception {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(dto.getLoginId(), dto.getPassword());

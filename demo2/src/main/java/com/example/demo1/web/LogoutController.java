@@ -1,6 +1,7 @@
 package com.example.demo1.web;
 
 import com.example.demo1.dto.LogoutDto;
+import com.example.demo1.dto.RefreshTokenDto;
 import com.example.demo1.jwt.JwtFilter;
 import com.example.demo1.service.LogoutService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,9 @@ public class LogoutController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(
             @RequestHeader(JwtFilter.AUTHORIZATION_HEADER) String accessToken,
-            @RequestHeader("Refresh") String refreshToken
+            @Validated @RequestBody RefreshTokenDto dto
     ) {
+        String refreshToken = dto.getRefreshToken();
         accessToken = accessToken.substring(7);
         logoutService.logout(refreshToken, accessToken);
         return ResponseEntity.status(HttpStatus.OK).body("로그아웃 되었습니다.");

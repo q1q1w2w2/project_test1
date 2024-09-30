@@ -1,13 +1,10 @@
 package com.example.demo1.jwt;
 
-import com.example.demo1.domain.RefreshToken;
-import com.example.demo1.dto.RefreshTokenDto;
 import com.example.demo1.exception.TokenValidationException;
 import com.example.demo1.repository.BlackListRepository;
 import com.example.demo1.service.BlackListService;
 import com.example.demo1.service.CustomUserDetailsService;
 import com.example.demo1.service.RefreshTokenService;
-import com.example.demo1.service.UserService;
 import com.example.demo1.util.AesUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -47,7 +44,6 @@ public class TokenProvider implements InitializingBean {
             @Value("${jwt.refresh-token-expire-time}") long refreshTokenExpireTime,
             @Value("${jwt.claim-key}") String claimKeyString,
             CustomUserDetailsService customUserDetailsService,
-            BlackListRepository blackListRepository,
             RefreshTokenService refreshTokenService,
             BlackListService blackListService) throws Exception {
         this.secret = secret;
@@ -65,21 +61,21 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(decode);
     }
 
-    public String createAccessToken(Authentication authentication) throws Exception {
-        String subject = authentication.getName();
-
-        String authority = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElse("ROLE_USER");
+    public String createAccessToken(String subject, String authority) throws Exception {
+//        String subject = authentication.getName();
+//
+//        String authority = authentication.getAuthorities().stream()
+//                .findFirst()
+//                .map(GrantedAuthority::getAuthority)
+//                .orElse("ROLE_USER");
         String encryptSubject = AesUtil.encrypt(subject, claimKey);
         String encryptAuthority = AesUtil.encrypt(authority, claimKey);
 
         return createToken(encryptSubject, encryptAuthority, accessTokenExpireTime);
     }
 
-    public String createRefreshToken(Authentication authentication) throws Exception {
-        String subject = authentication.getName();
+    public String createRefreshToken(String subject) throws Exception {
+//        String subject = authentication.getName();
         String encryptSubject = AesUtil.encrypt(subject, claimKey);
         String encryptAuthority = AesUtil.encrypt("ROLE_USER", claimKey);
         String refreshToken = createToken(encryptSubject, encryptAuthority, refreshTokenExpireTime);
@@ -89,13 +85,14 @@ public class TokenProvider implements InitializingBean {
         return refreshToken;
     }
 
-    public String createNewAccessToken(String refreshToken) throws Exception {
+    public String createNewAccessToken(String refreshToken, String authority) throws Exception {
         if (blackListService.existsInBlackList(refreshToken) || refreshTokenService.isRefreshTokenExpired(refreshToken)) {
             throw new TokenValidationException("유효하지 않은 refresh token입니다.");
         }
 
-        Authentication authentication = getAuthenticationFromRefreshToken(refreshToken);
-        return createAccessToken(authentication);
+//        Authentication authentication = getAuthenticationFromRefreshToken(refreshToken);
+        String subject = extractUserIdFromRefreshToken(refreshToken);
+        return createAccessToken(subject, authority);
     }
 
     private String createToken(String subject, String authority, long expireTime) {

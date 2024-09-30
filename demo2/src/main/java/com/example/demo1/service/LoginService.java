@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +31,22 @@ public class LoginService {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        String subject = authentication.getName();
+
+        String authority = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("ROLE_USER");
+
         Map<String, String> tokens = new HashMap<>();
-        tokens.put("refreshToken", tokenProvider.createRefreshToken(authentication));
-        tokens.put("accessToken", tokenProvider.createAccessToken(authentication));
+        tokens.put("refreshToken", tokenProvider.createRefreshToken(subject));
+        tokens.put("accessToken", tokenProvider.createAccessToken(subject, authority));
         return tokens;
+
+//        Map<String, String> tokens = new HashMap<>();
+//        tokens.put("refreshToken", tokenProvider.createRefreshToken(authentication));
+//        tokens.put("accessToken", tokenProvider.createAccessToken(authentication));
+//        return tokens;
     }
 
     /**

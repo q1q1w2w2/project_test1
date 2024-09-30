@@ -42,11 +42,13 @@ public class AuthController {
                     .body(Map.of("error", "refresh token이 null입니다."));
         }
 
+        String subject = tokenProvider.extractUserIdFromRefreshToken(refreshToken);
+
         try {
             if (tokenProvider.validateToken(refreshToken)) {
                 // 여기서 refresh token도 새롭게 발급 + 이전 refresh token 무효화
-                String accessToken = tokenProvider.createNewAccessToken(refreshToken);
-                String newRefreshToken = tokenProvider.createRefreshToken(tokenProvider.getAuthentication(accessToken));
+                String accessToken = tokenProvider.createNewAccessToken(refreshToken, "ROLE_USER"); // 추후 변경
+                String newRefreshToken = tokenProvider.createRefreshToken(subject);
 
                 // 블랙리스트 추가
                 blackListService.saveBlackList(new BlackList(refreshToken));

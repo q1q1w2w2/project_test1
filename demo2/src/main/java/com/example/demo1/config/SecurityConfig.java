@@ -4,13 +4,14 @@ import com.example.demo1.jwt.CustomAccessDeniedHandler;
 import com.example.demo1.jwt.CustomAuthenticationEntryPoint;
 import com.example.demo1.jwt.JwtFilter;
 import com.example.demo1.jwt.TokenProvider;
+import com.example.demo1.oauth.CustomAuthenticationFailureHandler;
+import com.example.demo1.oauth.CustomAuthenticationSuccessHandler;
 import com.example.demo1.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,6 +40,8 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAuthenticationSuccessHandler myAuthenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler myAuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -72,7 +74,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequest ->
                         authorizeRequest
                                 .requestMatchers("/h2-console/**", "/api/**", "/test/**", "/error", "/authority/all", "/token-refresh").permitAll()
-                                .requestMatchers("/login/oauth2/code/google").permitAll()
+                                .requestMatchers("/login/**", "/").permitAll()
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -94,7 +96,10 @@ public class SecurityConfig {
                                 .accessDeniedHandler(customAccessDeniedHandler)
                 )
 
-                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(myAuthenticationSuccessHandler)
+                        .failureHandler(myAuthenticationFailureHandler)
+                )
         ;
 
         return http.build();
@@ -115,9 +120,10 @@ public class SecurityConfig {
     }
 
     // 이 부분에 대해서는 spring security의 필터 체인 자체를 생략(jwtFilter 생략)
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web ->
-//                web.ignoring().requestMatchers("/token-refresh"));
-//    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web ->
+                web.ignoring().requestMatchers("error", "/favicon.ico"));
+    }
+
 }

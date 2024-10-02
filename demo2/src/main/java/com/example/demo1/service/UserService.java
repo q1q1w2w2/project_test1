@@ -86,7 +86,7 @@ public class UserService {
                 .updatedAt(LocalDateTime.now().withNano(0))
                 .build();
 
-        findUser.updateUser(user);
+        findUser.update(user);
     }
 
     public User findById(Long id) {

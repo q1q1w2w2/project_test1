@@ -1,8 +1,6 @@
 package com.example.demo1.jwt;
 
 import com.example.demo1.exception.TokenValidationException;
-import com.example.demo1.repository.BlackListRepository;
-import com.example.demo1.service.BlackListService;
 import com.example.demo1.service.CustomUserDetailsService;
 import com.example.demo1.service.RefreshTokenService;
 import com.example.demo1.util.AesUtil;
@@ -36,7 +34,6 @@ public class TokenProvider implements InitializingBean {
     private final long refreshTokenExpireTime;
     private final CustomUserDetailsService customUserDetailsService;
     private final RefreshTokenService refreshTokenService;
-    private final BlackListService blackListService;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
@@ -44,15 +41,14 @@ public class TokenProvider implements InitializingBean {
             @Value("${jwt.refresh-token-expire-time}") long refreshTokenExpireTime,
             @Value("${jwt.claim-key}") String claimKeyString,
             CustomUserDetailsService customUserDetailsService,
-            RefreshTokenService refreshTokenService,
-            BlackListService blackListService) throws Exception {
+            RefreshTokenService refreshTokenService
+    ) throws Exception {
         this.secret = secret;
         this.accessTokenExpireTime = accessTokenExpireTime * 1000;
         this.refreshTokenExpireTime = refreshTokenExpireTime * 1000;
         this.claimKey = AesUtil.generateKeyFromString(claimKeyString);
         this.customUserDetailsService = customUserDetailsService;
         this.refreshTokenService = refreshTokenService;
-        this.blackListService = blackListService;
     }
 
     @Override
@@ -86,7 +82,7 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String createNewAccessToken(String refreshToken, String authority) throws Exception {
-        if (blackListService.existsInBlackList(refreshToken) || refreshTokenService.isRefreshTokenExpired(refreshToken)) {
+        if (refreshTokenService.isRefreshTokenExpired(refreshToken)) {
             throw new TokenValidationException("유효하지 않은 refresh token입니다.");
         }
 

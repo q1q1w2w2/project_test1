@@ -1,14 +1,12 @@
 package com.example.demo1.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -70,10 +68,16 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public void updateUser(User user) {
+    public void update(User user) {
+        this.username = user.getUsername();
         this.password = user.getPassword();
         this.tel = user.getTel();
         this.address = user.getAddress();
         this.detail = user.getDetail();
+    }
+
+    public User updateUsername(String username) {
+        this.username = username;
+        return this;
     }
 }

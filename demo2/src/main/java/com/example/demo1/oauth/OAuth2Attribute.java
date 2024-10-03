@@ -38,6 +38,7 @@ public class OAuth2Attribute {
     }
 
     // 서비스에 따라 OAuth2Attribute 객체를 생성하는 메서드
+    // 서비스마다 가져오는 요소나 이름이 다르기 때문
     public static OAuth2Attribute of(String socialName, Map<String, Object> attributes) {
         if ("kakao".equals(socialName)) {
             return ofKakao("id", attributes);
@@ -52,6 +53,7 @@ public class OAuth2Attribute {
     private static OAuth2Attribute ofGoogle(String usernameAttributeName,
                                             Map<String, Object> attributes
     ) {
+        log.info("[ofGoogle]");
         return OAuth2Attribute.builder()
                 .name(String.valueOf(attributes.get("name")))
                 .email(String.valueOf(attributes.get("email")))
@@ -64,14 +66,15 @@ public class OAuth2Attribute {
     private static OAuth2Attribute ofKakao(String usernameAttributeName,
                                            Map<String, Object> attributes
     ) {
+        log.info("[ofKakao]");
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
 
         return OAuth2Attribute.builder()
                 .name(String.valueOf(kakaoProfile.get("nickname")))
                 .email(String.valueOf(kakaoAccount.get("email")))
-                .gender(String.valueOf(kakaoAccount.get("gender")))
-                .ageRange(String.valueOf(kakaoAccount.get("age_range")))
+//                .gender(String.valueOf(kakaoAccount.get("gender")))
+//                .ageRange(String.valueOf(kakaoAccount.get("age_range")))
                 .profileImageUrl(String.valueOf(kakaoProfile.get("profile_image_url")))
                 .nameAttributesKey(usernameAttributeName)
                 .attributes(attributes)
@@ -81,10 +84,11 @@ public class OAuth2Attribute {
     private static OAuth2Attribute ofNaver(String usernameAttributeName,
                                            Map<String, Object> attributes
     ) {
+        log.info("[ofNaver]");
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
         return OAuth2Attribute.builder()
-                .name(String.valueOf(response.get("nickname")))
+                .name(String.valueOf(response.get("name")))
                 .email(String.valueOf(response.get("email")))
 //                .profileImageUrl(String.valueOf(response.get("profile_image_url")))
 //                .ageRange((String) response.get("age"))

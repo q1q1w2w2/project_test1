@@ -33,7 +33,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final UserRepository userRepository;
     private final UserService userService;
-    private String registrationId;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -56,6 +55,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // OAuth2Attribute: OAuth2User의 attribute를 서비스 유형에 맞게 담아주는 클래스
         OAuth2Attribute attribute = OAuth2Attribute.of(registrationId, originAttributes);
 
+        log.info("attribute = {}", attribute);
+
+        // OAuth2Attribute를 통해 기존 User update or save
         User user = saveOrUpdate(attribute);
         String loginId = user.getLoginId();
 
@@ -69,10 +71,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Optional<User> findUser = userRepository.findByLoginId(attribute.getEmail());
         if (findUser.isPresent()) {
             // 업데이트
-            userService.update(findUser.get().getId(), new UpdateDto("password", "tel", "address", "detail")); // 임시
+            userService.update(findUser.get().getId(), new UpdateDto("password", null, null, null)); // 임시
             return findUser.get();
         }
         // 새로 생성
-        return userService.join(new JoinDto(attribute.getName(), attribute.getEmail(), "password", LocalDate.now(), "tel", "address", "detail"));
+        return userService.join(new JoinDto(attribute.getName(), attribute.getEmail(), "password", LocalDate.of(2000,1,1), null, null, null));
     }
 }

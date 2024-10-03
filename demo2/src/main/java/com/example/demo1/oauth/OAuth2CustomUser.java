@@ -1,6 +1,7 @@
 package com.example.demo1.oauth;
 
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
+@ToString
 public class OAuth2CustomUser implements OAuth2User, Serializable {
 
     private String registrationId;

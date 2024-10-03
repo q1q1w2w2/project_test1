@@ -30,10 +30,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         log.info("[AuthenticationSuccessHandler 실행]");
 
         // OAuth2User로 캐스팅하여 인증된 사용자 정보를 가져온다.
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+//        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        OAuth2CustomUser oAuth2User = (OAuth2CustomUser) authentication.getPrincipal();
+        log.info(authentication.getPrincipal().toString());
 
         // 사용자 이메일을 가져온다.
-        String email = oAuth2User.getAttribute("email");
+        String email = oAuth2User.getEmail();
         // 서비스 제공 플랫폼(GOOGLE, KAKAO, NAVER)이 어디인지 가져온다.
         String provider = oAuth2User.getName();
 

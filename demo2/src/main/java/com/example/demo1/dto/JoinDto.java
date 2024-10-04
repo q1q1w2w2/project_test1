@@ -37,4 +37,6 @@ public class JoinDto {
 
     @NotBlank
     private String detail;
+
+    private String provider;
 }

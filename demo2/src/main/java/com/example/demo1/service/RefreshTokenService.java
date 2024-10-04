@@ -5,7 +5,6 @@ import com.example.demo1.domain.User;
 import com.example.demo1.exception.TokenValidationException;
 import com.example.demo1.repository.RefreshTokenRepository;
 import com.example.demo1.repository.UserRepository;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

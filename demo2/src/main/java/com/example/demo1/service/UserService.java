@@ -76,7 +76,10 @@ public class UserService {
 
     @Transactional
     public void update(Long id, UpdateDto dto) {
-        User findUser = userRepository.findById(id);
+        Optional<User> findUser = userRepository.findById(id);
+        if (findUser.isEmpty()) {
+            throw new RuntimeException("유저 정보가 없습니다.");
+        }
 
         User user = User.builder()
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -86,14 +89,41 @@ public class UserService {
                 .updatedAt(LocalDateTime.now().withNano(0))
                 .build();
 
-        findUser.update(user);
+        findUser.get().update(user);
     }
 
     public User findById(Long id) {
-        return userRepository.findById(id);
+        Optional<User> findUser = userRepository.findById(id);
+        if (findUser.isEmpty()) {
+            throw new RuntimeException("유저 정보가 없습니다.");
+        }
+        return findUser.get();
     }
 
     public Optional<User> findByLoginId(String loginId) {
         return userRepository.findByLoginId(loginId);
+    }
+
+    @Transactional
+    public User joinOAuth(JoinDto dto) {
+
+        if (userRepository.findByLoginId(dto.getLoginId()).isPresent()) {
+            throw new UserAlreadyExistException("이미 존재하는 아이디입니다.");
+        }
+
+        User user = User.builder()
+                .username(dto.getUsername())
+                .birth(dto.getBirth())
+                .tel(dto.getTel())
+                .address(dto.getAddress())
+                .detail(dto.getDetail())
+                .loginId(dto.getLoginId())
+                .authority("ROLE_USER")
+                .createdAt(LocalDateTime.now().withNano(0))
+                .updatedAt(LocalDateTime.now().withNano(0))
+                .provider(dto.getProvider())
+                .build();
+
+        return userRepository.save(user);
     }
 }

@@ -42,6 +42,9 @@ public class User {
     @Column(name = "detail")
     private String detail;
 
+    @Column(name = "provider")
+    private String provider;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
@@ -54,7 +57,7 @@ public class User {
     }
 
     @Builder
-    public User(Long id, String username, String loginId, String password, String authority, LocalDate birth, String tel, String address, String detail, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(Long id, String username, String loginId, String password, String authority, LocalDate birth, String tel, String address, String detail, LocalDateTime createdAt, LocalDateTime updatedAt, String provider) {
         this.id = id;
         this.username = username;
         this.loginId = loginId;
@@ -66,10 +69,10 @@ public class User {
         this.detail = detail;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.provider = provider;
     }
 
     public void update(User user) {
-        this.username = user.getUsername();
         this.password = user.getPassword();
         this.tel = user.getTel();
         this.address = user.getAddress();

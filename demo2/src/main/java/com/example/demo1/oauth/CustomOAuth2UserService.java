@@ -28,8 +28,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    // OAuth 인증을 통해 사용자 정보를 가져오는 역할
-    // OAuth2 로그인 성공 시 DB에 저장
+    // OAuth 인증 성공 시 정보를 가져와 저장
 
     private final UserRepository userRepository;
     private final UserService userService;
@@ -42,11 +41,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> service = new DefaultOAuth2UserService();
 
         // OAuth2UserService를 사용하여 OAuth2User 정보를 가져온다.
-        OAuth2User oAuth2User = service.loadUser(userRequest); // naver 여기서 문제
-        // OAuth2User의 속성(name, picture, email, email_verified 정보 담겨있음)
+        OAuth2User oAuth2User = service.loadUser(userRequest);
+        // OAuth2User 속성
         Map<String, Object> originAttributes = oAuth2User.getAttributes();
-
-        // 클라이언트 등록 ID(google, kakao, naver)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         log.info("originAttributes = {}", originAttributes);
@@ -67,14 +64,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private User saveOrUpdate(OAuth2Attribute attribute) {
-
         Optional<User> findUser = userRepository.findByLoginId(attribute.getEmail());
         if (findUser.isPresent()) {
             // 업데이트
-            userService.update(findUser.get().getId(), new UpdateDto("password", null, null, null)); // 임시
+            userService.update(findUser.get().getId(), new UpdateDto("password", null, null, null)); // 추후 일반 update와 로직 분리(password)
             return findUser.get();
         }
         // 새로 생성
-        return userService.join(new JoinDto(attribute.getName(), attribute.getEmail(), "password", LocalDate.of(2000,1,1), null, null, null));
+        return userService.joinOAuth(JoinDto.builder()
+                .username(attribute.getName())
+                .loginId(attribute.getEmail())
+                .birth(LocalDate.of(2000, 1, 1))
+                .provider(attribute.getProvider())
+                .build());
     }
 }

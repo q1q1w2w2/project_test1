@@ -36,7 +36,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // 사용자 이메일을 가져온다.
         String email = oAuth2User.getEmail();
-        // 서비스 제공 플랫폼(GOOGLE, KAKAO, NAVER)이 어디인지 가져온다.
+        // 서비스 제공 플랫폼
         String provider = oAuth2User.getName();
 
         // OAuth2User로 부터 Role을 얻어온다.

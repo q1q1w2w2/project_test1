@@ -1,9 +1,9 @@
 package com.example.demo1.web;
 
 import com.example.demo1.domain.User;
-import com.example.demo1.dto.RefreshTokenDto;
+import com.example.demo1.dto.user.RefreshTokenDto;
 import com.example.demo1.jwt.TokenProvider;
-import com.example.demo1.service.RefreshTokenService;
+import com.example.demo1.service.login.RefreshTokenService;
 import com.example.demo1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

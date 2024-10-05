@@ -1,23 +1,18 @@
 package com.example.demo1.web;
 
 import com.example.demo1.domain.User;
-import com.example.demo1.dto.JoinDto;
-import com.example.demo1.dto.UpdateDto;
-import com.example.demo1.jwt.TokenProvider;
+import com.example.demo1.dto.user.JoinDto;
+import com.example.demo1.dto.user.UpdateDto;
 import com.example.demo1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller

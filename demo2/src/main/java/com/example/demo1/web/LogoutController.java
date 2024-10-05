@@ -1,9 +1,8 @@
 package com.example.demo1.web;
 
-import com.example.demo1.dto.LogoutDto;
-import com.example.demo1.dto.RefreshTokenDto;
+import com.example.demo1.dto.user.RefreshTokenDto;
 import com.example.demo1.jwt.JwtFilter;
-import com.example.demo1.service.LogoutService;
+import com.example.demo1.service.login.LogoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

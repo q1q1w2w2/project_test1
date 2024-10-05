@@ -6,7 +6,7 @@ import com.example.demo1.jwt.JwtFilter;
 import com.example.demo1.jwt.TokenProvider;
 import com.example.demo1.oauth.CustomAuthenticationFailureHandler;
 import com.example.demo1.oauth.CustomAuthenticationSuccessHandler;
-import com.example.demo1.service.CustomUserDetailsService;
+import com.example.demo1.service.login.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

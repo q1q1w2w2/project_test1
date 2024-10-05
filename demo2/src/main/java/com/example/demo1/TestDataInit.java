@@ -1,22 +1,30 @@
 package com.example.demo1;
 
-import com.example.demo1.dto.JoinDto;
+import com.example.demo1.domain.Category;
+import com.example.demo1.dto.user.JoinDto;
+import com.example.demo1.repository.CategoryRepository;
 import com.example.demo1.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Component
 public class TestDataInit {
 
     private final UserService userService;
+    private final CategoryRepository categoryRepository;
 
     @PostConstruct
     public void init() {
+        categoryRepository.save(new Category("음식", LocalDateTime.now(), LocalDateTime.now()));
+        categoryRepository.save(new Category("과일", LocalDateTime.now(), LocalDateTime.now()));
+        categoryRepository.save(new Category("장난감", LocalDateTime.now(), LocalDateTime.now()));
+        categoryRepository.save(new Category("주류", LocalDateTime.now(), LocalDateTime.now()));
+
         userService.joinAdmin(JoinDto.builder()
                 .username("admin")
                 .loginId("admin")
@@ -38,5 +46,7 @@ public class TestDataInit {
                 .tel("010-4561-3393")
                 .build()
         );
+
+
     }
 }

@@ -1,8 +1,8 @@
 package com.example.demo1.jwt;
 
 import com.example.demo1.exception.TokenValidationException;
-import com.example.demo1.service.CustomUserDetailsService;
-import com.example.demo1.service.RefreshTokenService;
+import com.example.demo1.service.login.CustomUserDetailsService;
+import com.example.demo1.service.login.RefreshTokenService;
 import com.example.demo1.util.AesUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -86,7 +86,6 @@ public class TokenProvider implements InitializingBean {
             throw new TokenValidationException("유효하지 않은 refresh token입니다.");
         }
 
-//        Authentication authentication = getAuthenticationFromRefreshToken(refreshToken);
         String subject = extractUserIdFromRefreshToken(refreshToken);
         return createAccessToken(subject, authority);
     }

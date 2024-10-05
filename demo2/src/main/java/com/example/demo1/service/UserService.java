@@ -1,8 +1,8 @@
 package com.example.demo1.service;
 
 import com.example.demo1.domain.User;
-import com.example.demo1.dto.JoinDto;
-import com.example.demo1.dto.UpdateDto;
+import com.example.demo1.dto.user.JoinDto;
+import com.example.demo1.dto.user.UpdateDto;
 import com.example.demo1.exception.user.UserAlreadyExistException;
 import com.example.demo1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -76,10 +76,8 @@ public class UserService {
 
     @Transactional
     public void update(Long id, UpdateDto dto) {
-        Optional<User> findUser = userRepository.findById(id);
-        if (findUser.isEmpty()) {
-            throw new RuntimeException("유저 정보가 없습니다.");
-        }
+        User findUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
 
         User user = User.builder()
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -89,7 +87,7 @@ public class UserService {
                 .updatedAt(LocalDateTime.now().withNano(0))
                 .build();
 
-        findUser.get().update(user);
+        findUser.update(user);
     }
 
     public User findById(Long id) {

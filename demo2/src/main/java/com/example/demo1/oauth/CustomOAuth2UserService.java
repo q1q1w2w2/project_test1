@@ -1,8 +1,8 @@
 package com.example.demo1.oauth;
 
 import com.example.demo1.domain.User;
-import com.example.demo1.dto.JoinDto;
-import com.example.demo1.dto.UpdateDto;
+import com.example.demo1.dto.user.JoinDto;
+import com.example.demo1.dto.user.UpdateDto;
 import com.example.demo1.repository.UserRepository;
 import com.example.demo1.service.UserService;
 import lombok.RequiredArgsConstructor;

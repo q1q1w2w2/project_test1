@@ -3,6 +3,7 @@ package com.example.demo1;
 import com.example.demo1.domain.Category;
 import com.example.demo1.dto.user.JoinDto;
 import com.example.demo1.repository.CategoryRepository;
+import com.example.demo1.service.ItemService;
 import com.example.demo1.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class TestDataInit {
 
     private final UserService userService;
     private final CategoryRepository categoryRepository;
+    private final ItemService itemService;
 
     @PostConstruct
     public void init() {
@@ -46,7 +48,5 @@ public class TestDataInit {
                 .tel("010-4561-3393")
                 .build()
         );
-
-
     }
 }

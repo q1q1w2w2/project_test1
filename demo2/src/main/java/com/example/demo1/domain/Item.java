@@ -55,4 +55,8 @@ public class Item {
         this.updatedAt = LocalDateTime.now().withNano(0);
         return this;
     }
+
+    public void removeQuantity(int quantity) {
+        this.quantity -= quantity;
+    }
 }

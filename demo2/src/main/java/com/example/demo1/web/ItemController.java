@@ -34,7 +34,7 @@ public class ItemController {
     }
 
     @PostMapping("/update/{itemIdx}")
-    public ResponseEntity updateItem(@Validated @RequestBody ItemDto dto,@PathVariable Long itemIdx, @RequestHeader String authorization) throws Exception {
+    public ResponseEntity<ItemResponseDto> updateItem(@Validated @RequestBody ItemDto dto,@PathVariable Long itemIdx, @RequestHeader String authorization) throws Exception {
         String loginId = tokenUtil.extractUserByToken(authorization).getLoginId();
 
         Item updateItem = itemService.update(dto, itemIdx, loginId);

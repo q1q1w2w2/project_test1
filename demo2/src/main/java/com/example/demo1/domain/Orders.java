@@ -59,4 +59,8 @@ public class Orders {
 
         return orders;
     }
+
+    public void updateStep(int step) {
+        this.step = step;
+    }
 }

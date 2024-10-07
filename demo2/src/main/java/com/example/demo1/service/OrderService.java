@@ -2,6 +2,7 @@ package com.example.demo1.service;
 
 import com.example.demo1.domain.*;
 import com.example.demo1.dto.item.AddCartDto;
+import com.example.demo1.dto.item.UpdateOrderStepDto;
 import com.example.demo1.repository.CartRepository;
 import com.example.demo1.repository.ItemRepository;
 import com.example.demo1.repository.OrdersRepository;
@@ -32,8 +33,6 @@ public class OrderService {
             throw new RuntimeException("수량이 부족합니다.");
         }
 
-        item.removeQuantity(dto.getEa());
-
         Cart cart = Cart.builder()
                 .user(user)
                 .item(item)
@@ -50,9 +49,21 @@ public class OrderService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
 
+        if (quantity > item.getQuantity()) {
+            throw new RuntimeException("수량이 부족합니다.");
+        }
+
         OrdersItem ordersItem = OrdersItem.createOrdersItem(item, item.getPrice(), quantity);
         Orders orders = Orders.createOrders(user, ordersItem);
 
         return ordersRepository.save(orders);
+    }
+
+    @Transactional
+    public void updateStep(UpdateOrderStepDto dto) {
+        Orders orders = ordersRepository.findById(dto.getOrdersIdx())
+                .orElseThrow(() -> new RuntimeException("주문 정보를 찾을 수 없습니다."));
+
+        orders.updateStep(dto.getStep());
     }
 }

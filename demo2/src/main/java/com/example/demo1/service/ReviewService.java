@@ -37,6 +37,12 @@ public class ReviewService {
             throw new RuntimeException("배송이 완료된 이후 리뷰를 달아주세요.");
         }
 
+        if (orders.getReview() == 1) {
+            throw new RuntimeException("이미 리뷰를 작성한 주문입니다.");
+        }
+
+        orders.updateReview(1);
+
         Review review = Review.builder()
                 .orders(orders)
                 .review(dto.getReview())

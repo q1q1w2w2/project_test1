@@ -22,8 +22,9 @@ public class Orders {
     @JoinColumn(name = "user_idx")
     private User user;
 
-    // 주문완료:1, 배송시작:2, 배송완료:3, 취소:10
-    private int step;
+    private int step; // 주문완료:1, 배송시작:2, 배송완료:3, 취소:10
+
+    private int review; // 미등록:0, 등록:1
 
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
     private List<OrdersItem> ordersItems = new ArrayList<>();
@@ -32,9 +33,10 @@ public class Orders {
     private LocalDateTime updateAt;
 
     @Builder
-    public Orders(User user, int step, OrdersItem ordersItem, LocalDateTime createAt, LocalDateTime updateAt) {
+    public Orders(User user, int step, int review, OrdersItem ordersItem, LocalDateTime createAt, LocalDateTime updateAt) {
         this.user = user;
         this.step = step;
+        this.review = review;
         this.ordersItems.add(ordersItem);
         this.createAt = createAt;
         this.updateAt = updateAt;
@@ -49,6 +51,7 @@ public class Orders {
         Orders orders = Orders.builder()
                 .user(user)
                 .step(3)
+                .review(0)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
                 .build();
@@ -62,5 +65,9 @@ public class Orders {
 
     public void updateStep(int step) {
         this.step = step;
+    }
+
+    public void updateReview(int review) {
+        this.review = review;
     }
 }
